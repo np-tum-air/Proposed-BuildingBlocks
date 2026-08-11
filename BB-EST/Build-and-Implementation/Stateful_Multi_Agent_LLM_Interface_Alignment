@@ -1,0 +1,183 @@
+# Stateful Multi-Agent LLMs for Cross-View Interface Alignment in Automotive MBSE
+
+## BB Tags(s)
+
+BB-SC-TC, BB-CEST
+
+## Functional Clusters
+
+Build-and-Implementation
+
+## Layer
+
+AppLayer
+
+## BB Usage
+
+AI-assisted Model-Based Systems Engineering (MBSE), automated UML model generation, cross-view interface alignment, automotive architecture modeling, VSS-based signal grounding, model validation, and multi-agent orchestration for Software Defined Vehicle (SDV) engineering.
+
+## Known Implementation
+
+Prototype implementation based on an n8n-orchestrated multi-agent workflow integrating LLM-based model generation, Vehicle Signal Specification (VSS)-grounded Retrieval-Augmented Generation (RAG), deterministic PlantUML syntax validation, semantic validation, and stateful backtracking.
+
+The implementation generates and validates multiple related architectural views in the sequence:
+
+Class → Activity → Sequence
+
+## ID (unique name)
+
+tum-stateful-multi-agent-mbse
+
+## Description
+
+This component represents a stateful multi-agent LLM workflow for automated Model-Based Systems Engineering (MBSE) in Software Defined Vehicle (SDV) development. The approach addresses cross-view inconsistencies and architectural hallucinations that can occur when Large Language Models independently generate structural, behavioral, and interaction models.
+
+The workflow follows a sequential generation matrix consisting of Class, Activity, and Sequence diagrams. The Class diagram establishes the structural baseline of the system, including components, interfaces, methods, and vehicle signals. This validated architectural state is subsequently propagated to the Activity and Sequence diagram generation steps, constraining downstream model generation.
+
+Vehicle Signal Specification (VSS) information is integrated through Retrieval-Augmented Generation (RAG), enabling the agents to retrieve standardized vehicle signals and their corresponding data types instead of generating potentially incorrect signal identifiers.
+
+An independent AI Validator Agent performs semantic validation of generated models. The validator compares newly generated artifacts with previously validated architectural states and classifies detected problems according to a structured error taxonomy covering diagram misalignment, syntax and logic errors, hallucinated components, missing requirements, unintended deletions, and interface incompatibilities.
+
+When inconsistencies are detected, a stateful backtracking mechanism enables the workflow to return to an earlier modeling stage. For example, if generation of a Sequence diagram requires an interface that is missing from the Class diagram, the workflow can return to the Class generation stage, update the structural model, and subsequently regenerate the dependent behavioral views.
+
+The approach was evaluated using an automotive Child Presence Detection (CPD) ADAS scenario. The complete multi-agent workflow achieved 97% Entity Traceability, 87% Signal Conservation, and an F1-score of 85%, substantially improving cross-view consistency compared with zero-shot, RAG-only, and RAG with static validation configurations.
+
+## Rationale
+
+LLMs provide significant opportunities for automating MBSE activities, including generation of UML/SysML models from natural-language requirements. However, independently generated models can suffer from architectural drift, where components, signals, methods, parameters, or data types introduced in one architectural view are inconsistent with those defined in another.
+
+RAG improves factual grounding by providing domain-specific information such as standardized VSS signals, but retrieval alone cannot guarantee structural compatibility between multiple generated models.
+
+The proposed approach therefore combines domain grounding with persistent architectural state, sequential model generation, deterministic validation, semantic AI-based validation, and cyclic backtracking.
+
+The structural model acts as the architectural foundation for subsequent behavioral and interaction views. Each downstream model is constrained by previously validated artifacts. When inconsistencies appear, the workflow can automatically revise upstream models and regenerate affected downstream views.
+
+This provides a structured mechanism for reducing hallucinations and increasing traceability when generative AI is used for automotive systems engineering.
+
+## Governance Applicable S-BB(s)
+
+AI-assisted engineering governance, model validation, engineering-data governance, traceability management, architecture consistency validation, human oversight, and validation of AI-generated engineering artifacts.
+
+## Compose BB(s)
+
+LLM inference component, Generator Agent, AI Validator Agent, RAG component, VSS knowledge base, vector database, PlantUML model generator, deterministic syntax validator, state-management component, dynamic backtracking mechanism, diagram rendering component, and n8n workflow orchestration.
+
+## What is needed to Design and Implement
+
+Automotive system requirements, architectural modeling rules, UML/PlantUML representations, Vehicle Signal Specification (VSS) information, suitable LLM models, prompting strategies, RAG infrastructure, vector database infrastructure, semantic validation rules, cross-view consistency criteria, state-management mechanisms, and workflow orchestration.
+
+The workflow requires explicit definitions of dependencies between architectural views. In the demonstrated implementation, these dependencies follow the sequence:
+
+Class → Activity → Sequence
+
+The Class diagram establishes the structural system state, the Activity diagram describes behavioral logic based on this state, and the Sequence diagram describes interactions while remaining constrained by both structural and behavioral information.
+
+A semantic Validator Agent is required to compare generated artifacts with previously validated architectural states and determine whether regeneration or backtracking is necessary.
+
+n8n is used to orchestrate the multi-agent workflow and manage cyclic execution and state transitions.
+
+## What is needed to build and run
+
+The implementation requires:
+
+* n8n for multi-agent workflow orchestration and state management.
+* Access to suitable LLM models through configured inference interfaces.
+* A RAG pipeline for retrieving automotive domain information.
+* A vector database containing Vehicle Signal Specification (VSS) information.
+* VSS data represented in a machine-processable format, such as JSONL.
+* Embedding models for indexing and retrieving VSS information.
+* PlantUML-compatible model generation.
+* Deterministic syntax-validation mechanisms.
+* An AI Validator Agent for semantic and cross-view consistency validation.
+* Persistent workflow state for propagating validated architectural information between generation stages.
+* Diagram rendering infrastructure for visualization of generated UML models.
+
+Locally deployed or externally hosted AI models can be integrated depending on privacy, computational, latency, and deployment requirements.
+
+## Non-Functional Requirements
+
+Traceability between architectural views, semantic consistency of generated interfaces, reproducibility of model generation, deterministic syntax validation, preservation of validated architectural state, interoperability with automotive signal standards, extensibility of validation rules, explainability of detected inconsistencies, support for iterative correction, and validation of AI-generated artifacts before their use in safety-critical engineering activities.
+
+Scalability must also be considered because larger architectures increase context size, validation complexity, model-generation latency, and visualization complexity.
+
+## Dependencies to other Clusters
+
+Generative AI/LLM infrastructure, Model-Based Systems Engineering, Model-Driven Engineering, automotive architecture engineering, Vehicle Signal Specification infrastructure, RAG infrastructure, vector databases, UML/PlantUML tooling, workflow orchestration, and engineering validation infrastructure.
+
+## Vehicle API Relevant
+
+Yes. The approach uses Vehicle Signal Specification (VSS) information to ground generated architectural interfaces and behavioral models in standardized vehicle signals and corresponding data types.
+
+The generated models can therefore represent interactions between SDV components and Vehicle API-compatible signal structures.
+
+## Author/Company
+
+TUM
+
+## Priority
+
+Medium
+
+## Contribution supported by RDI projects
+
+HAL4SDV
+
+## Availability of Source Code
+
+Prototype implementation available within the associated research activities.
+
+The workflow is implemented using an n8n-based orchestration architecture connecting model-generation agents, VSS-grounded RAG, validation components, persistent architectural state, and dynamic backtracking mechanisms.
+
+## Related Publication
+
+The methodology and evaluation of the stateful multi-agent MBSE approach are described in the following publication:
+
+Stateful Multi-Agent LLMs for Cross-View Interface Alignment in Automotive Model-Based Systems Engineering
+
+Aleksei Velsh, Nenad Petrovic, and Alois Knoll
+
+https://arxiv.org/abs/2608.08038
+
+## Availability of API
+
+Available through the individual LLM, RAG, vector-database, validation, and workflow components integrated within the multi-agent architecture.
+
+Workflow-level integration is provided through n8n.
+
+## Type of API
+
+Library/Framework API
+
+## Potential obstacles
+
+LLM hallucinations, architectural drift, incorrect interpretation of natural-language requirements, inconsistent interfaces between architectural views, incorrect VSS mappings, dependency on the completeness of the VSS knowledge base, semantic errors not detectable through syntax validation alone, increasing context size for large architectures, multi-agent execution latency, and computational requirements of iterative validation.
+
+Additional challenges include critic hallucinations, where an AI Validator Agent can incorrectly reject a valid model; model-version drift affecting reproducibility; prompt sensitivity; and scalability limitations when generating or visualizing very large UML architectures.
+
+The approach validates semantic and architectural consistency but does not replace formal verification or physical system simulation. Generated architectures therefore require additional validation before deployment in safety-critical vehicle systems.
+
+## Maturity Badges
+
+Gold, Gold, Gold, Gold, Gold
+
+## State (+ date of last change)
+
+Incubating (research prototype and evaluated multi-agent workflow available) — August 2026
+
+## System Context
+
+The component operates as part of an AI-assisted SDV engineering and MBSE toolchain.
+
+Natural-language automotive requirements are provided to an n8n-orchestrated multi-agent workflow. The Generator Agent combines these requirements with retrieved VSS information and previously validated architectural state to generate UML/PlantUML models.
+
+The workflow first generates the structural Class diagram. After validation, this model becomes part of the persistent architectural state and constrains generation of the Activity diagram. The validated Class and Activity diagrams subsequently constrain generation of the Sequence diagram.
+
+Generated models first pass deterministic syntax validation. Models that satisfy syntax requirements are subsequently analyzed by an independent AI Validator Agent for semantic and cross-view consistency.
+
+When the Validator Agent identifies an inconsistency, the workflow triggers an iterative correction cycle. If the problem originates in an upstream architectural view, dynamic backtracking returns execution to the corresponding generation stage. The updated model is then propagated through the dependent views until the required level of architectural consistency is achieved.
+
+The resulting validated models can be rendered as UML diagrams and provided to downstream MBSE, SDV architecture, simulation, testing, and engineering activities.
+
+## Compliant to
+
+Model-Based Systems Engineering (MBSE), Model-Driven Engineering (MDE), UML-based architectural modeling, PlantUML representations, Vehicle Signal Specification (VSS) concepts, Retrieval-Augmented Generation (RAG), multi-agent AI concepts, and cross-view interface consistency principles.
